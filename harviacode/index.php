@@ -39,19 +39,19 @@ require_once 'core/process.php';
                     <div class="form-group">
                         <div class="row">
                             <?php $jenis_tabel = isset($_POST['jenis_tabel']) ? $_POST['jenis_tabel'] : 'reguler_table'; ?>
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="radio" style="margin-bottom: 0px; margin-top: 0px">
                                     <label>
                                         <input type="radio" name="jenis_tabel" value="reguler_table" <?php echo $jenis_tabel == 'reguler_table' ? 'checked' : ''; ?>>
                                         Reguler Table
                                     </label>
-                                </div>                            
+                                </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <div class="radio" style="margin-bottom: 0px; margin-top: 0px">
                                     <label>
                                         <input type="radio" name="jenis_tabel" value="datatables" <?php echo $jenis_tabel == 'datatables' ? 'checked' : ''; ?>>
-                                        Serverside Datatables
+                                        Datatables
                                     </label>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@ require_once 'core/process.php';
                                 Export Excel
                             </label>
                         </div>
-                    </div>    
+                    </div>
 
                     <div class="form-group">
                         <div class="checkbox">
@@ -76,7 +76,7 @@ require_once 'core/process.php';
                                 Export Word
                             </label>
                         </div>
-                    </div>    
+                    </div>
 
                     <!--                    <div class="form-group">
                                             <div class="checkbox  <?php // echo file_exists('../application/third_party/mpdf/mpdf.php') ? '' : 'disabled';   ?>">
@@ -113,18 +113,24 @@ require_once 'core/process.php';
                 ?>
             </div>
             <div class="col-md-9">
-                <h3 style="margin-top: 0px">Codeigniter CRUD Generator 1.4 by <a target="_blank" href="http://harviacode.com">harviacode.com</a></h3>
+                <h3 style="margin-top: 0px">Codeigniter CRUD Generator 1.3.1 by <a target="_blank" href="http://harviacode.com">harviacode.com</a></h3>
                 <p><strong>About :</strong></p>
                 <p>
                     Codeigniter CRUD Generator is a simple tool to auto generate model, controller and view from your table. This tool will boost your
-                    writing code. This CRUD generator will make a complete CRUD operation, pagination, search, form*, form validation, export to excel, and export to word. 
+                    writing code. This CRUD generator will make a complete CRUD operation, pagination, search, form*, form validation, export to excel, and export to word.
                     This CRUD Generator using bootstrap 3 style. You still need to modify the result code for more customization.
                 </p>
                 <small>* generate textarea and text input only</small>
                 <p>
                     Please visit and like <a target="_blank" href="http://harviacode.com"><b>harviacode.com</b></a> for more info and PHP tutorials.
                 </p>
-                <p><strong>Preparation before using this CRUD Generator (Important) :</strong></p>
+                <p><strong>How to use this CRUD Generator :</strong></p>
+                <ul>
+                    <li>Simply put 'harviacode' folder, 'asset' folder and .htaccess file into your project root folder.</li>
+                    <li>Open http://localhost/yourprojectname/harviacode.</li>
+                    <li>Select table and push generate button.</li>
+                </ul>
+                <p><strong>Important :</strong></p>
                 <ul>
                     <li>On application/config/autoload.php, load database library, session library and url helper</li>
                     <li>On application/config/config.php, set :</b>.
@@ -139,22 +145,6 @@ require_once 'core/process.php';
                     </li>
                     <li>On application/config/database.php, set hostname, username, password and database.</li>
                 </ul>
-                <p><strong>Using this CRUD Generator :</strong></p>
-                <ul>
-                    <li>Simply put 'harviacode' folder, 'asset' folder and .htaccess file into your project root folder.</li>
-                    <li>Open http://localhost/yourprojectname/harviacode.</li>
-                    <li>Select table and push generate button.</li>
-                </ul>
-                <p><strong>FAQ :</strong></p>
-                <ul>
-                    <li>Select table show no data. Make sure you have correct database configuration on application/config/database.php and load database library on autoload.</li>
-                    <li>Error chmod on mac and linux. Please change your application folder and harviacode folder chmod to 777 </li>
-                    <li>Error 404 when click Create, Read, Update, Delete or Next Page. Make sure your mod_rewrite is active 
-                        and you can access http://localhost/yourproject/welcome. The problem is on htaccess. Still have problem?
-                        please go to google and search how to remove index.php codeigniter.
-                    </li>
-                    <li>Error cannot Read, Update, Delete. Make sure your table have primary key.</li>
-                </ul>
                 <br>
                 <p><strong>Thanks for Support Me</strong></p>
                 <p>Buy me a cup of coffee :)</p>
@@ -168,11 +158,6 @@ require_once 'core/process.php';
                 <p><strong>Update</strong></p>
 
                 <ul>
-                    <li>V.1.4 - 26 November 2016
-                        <ul>
-                            <li>Change to serverside datatables using ignited datatables</li>
-                        </ul>
-                    </li>
                     <li>V.1.3.1 - 05 April 2016
                         <ul>
                             <li>Put view files into folder</li>

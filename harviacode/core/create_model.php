@@ -15,30 +15,9 @@ class " . $m . " extends CI_Model
     function __construct()
     {
         parent::__construct();
-    }";
+    }
 
-if ($jenis_tabel <> 'reguler_table') {
-    
-$column_all = array();
-foreach ($all as $row) {
-    $column_all[] = $row['column_name'];
-}
-$columnall = implode(',', $column_all);
-    
-$string .="\n\n    // datatables
-    function json() {
-        \$this->datatables->select('".$columnall."');
-        \$this->datatables->from('".$table_name."');
-        //add this line for join
-        //\$this->datatables->join('table2', '".$table_name.".field = table2.field');
-        \$this->datatables->add_column('action', anchor(site_url('".$c_url."/read/\$1'),'<i class=\"fa fa-eye\" aria-hidden=\"true\"></i>', array('class' => 'btn btn-danger btn-sm')).\" 
-            \".anchor(site_url('".$c_url."/update/\$1'),'<i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i>', array('class' => 'btn btn-danger btn-sm')).\" 
-                \".anchor(site_url('".$c_url."/delete/\$1'),'<i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i>','class=\"btn btn-danger btn-sm\" onclick=\"javasciprt: return confirm(\\'Are You Sure ?\\')\"'), '$pk');
-        return \$this->datatables->generate();
-    }";
-}
-
-$string .="\n\n    // get all
+    // get all
     function get_all()
     {
         \$this->db->order_by(\$this->id, \$this->order);

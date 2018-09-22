@@ -5,43 +5,24 @@ if (!defined('BASEPATH'))
 
 class Kontrol extends CI_Controller
 {
+    
+        
     function __construct()
     {
         parent::__construct();
-        is_login();
         $this->load->model('Kontrol_model');
-        $this->load->library('form_validation');        
-	$this->load->library('datatables');
+        $this->load->library('form_validation');
     }
 
     public function index()
     {
-        $this->template->load('template','kontrol/kontrol_list');
-    } 
-    
-    public function json() {
-        header('Content-Type: application/json');
-        echo $this->Kontrol_model->json();
-    }
+        $kontrol = $this->Kontrol_model->get_all();
 
-    public function read($id) 
-    {
-        $row = $this->Kontrol_model->get_by_id($id);
-        if ($row) {
-            $data = array(
-		'id' => $row->id,
-		'id_dokter' => $row->id_dokter,
-		'no_rm' => $row->no_rm,
-		'no_kontrol' => $row->no_kontrol,
-		'tgl_kontrol' => $row->tgl_kontrol,
-		'ket' => $row->ket,
-		'created' => $row->created,
-	    );
-            $this->template->load('template','kontrol/kontrol_read', $data);
-        } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
-            redirect(site_url('kontrol'));
-        }
+        $data = array(
+            'kontrol_data' => $kontrol
+        );
+
+        $this->template->load('template','kontrol_list', $data);
     }
 
     public function create() 
@@ -53,11 +34,10 @@ class Kontrol extends CI_Controller
 	    'id_dokter' => set_value('id_dokter'),
 	    'no_rm' => set_value('no_rm'),
 	    'no_kontrol' => set_value('no_kontrol'),
-	    'tgl_kontrol' => set_value('tgl_kontrol'),
-	    'ket' => set_value('ket'),
-	    'created' => set_value('created'),
+	    'tgl_kontrol' => date("m-d-Y", strtotime(set_value('tgl_kontrol'))),
+	    'ket' => set_value('ket')
 	);
-        $this->template->load('template','kontrol/kontrol_form', $data);
+        $this->template->load('template','kontrol_form', $data);
     }
     
     public function create_action() 
@@ -71,13 +51,13 @@ class Kontrol extends CI_Controller
 		'id_dokter' => $this->input->post('id_dokter',TRUE),
 		'no_rm' => $this->input->post('no_rm',TRUE),
 		'no_kontrol' => $this->input->post('no_kontrol',TRUE),
-		'tgl_kontrol' => $this->input->post('tgl_kontrol',TRUE),
+		'tgl_kontrol' => date("Y-m-d", strtotime($this->input->post('tgl_kontrol',TRUE))),
 		'ket' => $this->input->post('ket',TRUE),
-		'created' => $this->input->post('created',TRUE),
+		'created' => date('Y-m-d'),
 	    );
 
             $this->Kontrol_model->insert($data);
-            $this->session->set_flashdata('message', 'Create Record Success 2');
+            $this->session->set_flashdata('message', 'Create Record Success');
             redirect(site_url('kontrol'));
         }
     }
@@ -94,11 +74,10 @@ class Kontrol extends CI_Controller
 		'id_dokter' => set_value('id_dokter', $row->id_dokter),
 		'no_rm' => set_value('no_rm', $row->no_rm),
 		'no_kontrol' => set_value('no_kontrol', $row->no_kontrol),
-		'tgl_kontrol' => set_value('tgl_kontrol', $row->tgl_kontrol),
-		'ket' => set_value('ket', $row->ket),
-		'created' => set_value('created', $row->created),
+		'tgl_kontrol' =>set_value('tgl_kontrol',  date("Y-m-d",  strtotime($row->tgl_kontrol))),
+		'ket' => set_value('ket', $row->ket)
 	    );
-            $this->template->load('template','kontrol/kontrol_form', $data);
+            $this->template->load('template','kontrol_form', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('kontrol'));
@@ -107,7 +86,7 @@ class Kontrol extends CI_Controller
     
     public function update_action() 
     {
-        $this->_rules();
+        $this->_rulesx();
 
         if ($this->form_validation->run() == FALSE) {
             $this->update($this->input->post('id', TRUE));
@@ -116,9 +95,8 @@ class Kontrol extends CI_Controller
 		'id_dokter' => $this->input->post('id_dokter',TRUE),
 		'no_rm' => $this->input->post('no_rm',TRUE),
 		'no_kontrol' => $this->input->post('no_kontrol',TRUE),
-		'tgl_kontrol' => $this->input->post('tgl_kontrol',TRUE),
-		'ket' => $this->input->post('ket',TRUE),
-		'created' => $this->input->post('created',TRUE),
+		'tgl_kontrol' => date("Y-m-d", strtotime($this->input->post('tgl_kontrol',TRUE))),
+		'ket' => $this->input->post('ket',TRUE)
 	    );
 
             $this->Kontrol_model->update($this->input->post('id', TRUE), $data);
@@ -144,11 +122,22 @@ class Kontrol extends CI_Controller
     public function _rules() 
     {
 	$this->form_validation->set_rules('id_dokter', 'id dokter', 'trim|required');
+	$this->form_validation->set_rules('no_rm', 'no rm', 'trim|required|is_unique[kontrol.no_rm]');
+	$this->form_validation->set_rules('no_kontrol', 'no kontrol', 'trim|required|is_unique[kontrol.no_kontrol]');
+	$this->form_validation->set_rules('tgl_kontrol', 'tgl kontrol', 'trim|required');
+	$this->form_validation->set_rules('ket', 'ket', 'trim|required');
+
+	$this->form_validation->set_rules('id', 'id', 'trim');
+	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
+    }
+
+    public function _rulesx() 
+    {
+	$this->form_validation->set_rules('id_dokter', 'id dokter', 'trim|required');
 	$this->form_validation->set_rules('no_rm', 'no rm', 'trim|required');
 	$this->form_validation->set_rules('no_kontrol', 'no kontrol', 'trim|required');
 	$this->form_validation->set_rules('tgl_kontrol', 'tgl kontrol', 'trim|required');
 	$this->form_validation->set_rules('ket', 'ket', 'trim|required');
-	$this->form_validation->set_rules('created', 'created', 'trim|required');
 
 	$this->form_validation->set_rules('id', 'id', 'trim');
 	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
@@ -192,7 +181,7 @@ class Kontrol extends CI_Controller
 	    xlsWriteLabel($tablebody, $kolombody++, $data->no_rm);
 	    xlsWriteLabel($tablebody, $kolombody++, $data->no_kontrol);
 	    xlsWriteLabel($tablebody, $kolombody++, $data->tgl_kontrol);
-	    xlsWriteNumber($tablebody, $kolombody++, $data->ket);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->ket);
 	    xlsWriteLabel($tablebody, $kolombody++, $data->created);
 
 	    $tablebody++;
@@ -213,7 +202,7 @@ class Kontrol extends CI_Controller
             'start' => 0
         );
         
-        $this->load->view('kontrol/kontrol_doc',$data);
+        $this->load->view('kontrol_doc',$data);
     }
 
 }
@@ -221,5 +210,5 @@ class Kontrol extends CI_Controller
 /* End of file Kontrol.php */
 /* Location: ./application/controllers/Kontrol.php */
 /* Please DO NOT modify this information : */
-/* Generated by Harviacode Codeigniter CRUD Generator 2018-09-22 05:08:32 */
+/* Generated by Harviacode Codeigniter CRUD Generator 2018-09-22 22:59:07 */
 /* http://harviacode.com */

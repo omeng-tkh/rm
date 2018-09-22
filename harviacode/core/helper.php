@@ -14,7 +14,7 @@ function readJSON($path)
 
 function createFile($string, $path)
 {
-    $create = fopen($path, "w") or die("Change your permision folder for application and harviacode folder to 777");
+    $create = fopen($path, "w") or die("Unable to open file!");
     fwrite($create, $string);
     fclose($create);
     

@@ -7,18 +7,13 @@ if (!defined('BASEPATH'))
 
 class " . $c . " extends CI_Controller
 {
+    
+        
     function __construct()
     {
         parent::__construct();
-        is_login();
         \$this->load->model('$m');
-        \$this->load->library('form_validation');";
-
-if ($jenis_tabel <> 'reguler_table') {
-    $string .= "        \n\t\$this->load->library('datatables');";
-}
-        
-$string .= "
+        \$this->load->library('form_validation');
     }";
 
 if ($jenis_tabel == 'reguler_table') {
@@ -26,22 +21,21 @@ if ($jenis_tabel == 'reguler_table') {
 $string .= "\n\n    public function index()
     {
         \$q = urldecode(\$this->input->get('q', TRUE));
-        \$start = intval(\$this->uri->segment(3));
+        \$start = intval(\$this->input->get('start'));
         
         if (\$q <> '') {
-            \$config['base_url'] = base_url() . '$index.php/c_url/index.html?q=' . urlencode(\$q);
-            \$config['first_url'] = base_url() . 'index.php/$c_url/index.html?q=' . urlencode(\$q);
+            \$config['base_url'] = base_url() . '$c_url/index.html?q=' . urlencode(\$q);
+            \$config['first_url'] = base_url() . '$c_url/index.html?q=' . urlencode(\$q);
         } else {
-            \$config['base_url'] = base_url() . 'index.php/$c_url/index/';
-            \$config['first_url'] = base_url() . 'index.php/$c_url/index/';
+            \$config['base_url'] = base_url() . '$c_url/index.html';
+            \$config['first_url'] = base_url() . '$c_url/index.html';
         }
 
         \$config['per_page'] = 10;
-        \$config['page_query_string'] = FALSE;
+        \$config['page_query_string'] = TRUE;
         \$config['total_rows'] = \$this->" . $m . "->total_rows(\$q);
         \$$c_url = \$this->" . $m . "->get_limit_data(\$config['per_page'], \$start, \$q);
-        \$config['full_tag_open'] = '<ul class=\"pagination pagination-sm no-margin pull-right\">';
-        \$config['full_tag_close'] = '</ul>';
+
         \$this->load->library('pagination');
         \$this->pagination->initialize(\$config);
 
@@ -52,19 +46,20 @@ $string .= "\n\n    public function index()
             'total_rows' => \$config['total_rows'],
             'start' => \$start,
         );
-        \$this->template->load('template','$c_url/$v_list', \$data);
+        \$this->template->load('template','$v_list', \$data);
     }";
 
 } else {
     
 $string .="\n\n    public function index()
     {
-        \$this->template->load('template','$c_url/$v_list');
-    } 
-    
-    public function json() {
-        header('Content-Type: application/json');
-        echo \$this->" . $m . "->json();
+        \$$c_url = \$this->" . $m . "->get_all();
+
+        \$data = array(
+            '" . $c_url . "_data' => \$$c_url
+        );
+
+        \$this->template->load('template','$v_list', \$data);
     }";
 
 }
@@ -78,7 +73,7 @@ foreach ($all as $row) {
     $string .= "\n\t\t'" . $row['column_name'] . "' => \$row->" . $row['column_name'] . ",";
 }
 $string .= "\n\t    );
-            \$this->template->load('template','$c_url/$v_read', \$data);
+            \$this->template->load('template','$v_read', \$data);
         } else {
             \$this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('$c_url'));
@@ -94,7 +89,7 @@ foreach ($all as $row) {
     $string .= "\n\t    '" . $row['column_name'] . "' => set_value('" . $row['column_name'] . "'),";
 }
 $string .= "\n\t);
-        \$this->template->load('template','$c_url/$v_form', \$data);
+        \$this->template->load('template','$v_form', \$data);
     }
     
     public function create_action() 
@@ -108,11 +103,10 @@ $string .= "\n\t);
 foreach ($non_pk as $row) {
     $string .= "\n\t\t'" . $row['column_name'] . "' => \$this->input->post('" . $row['column_name'] . "',TRUE),";
 }
-//$oke = alert('alert-info', 'Selamat', 'Data Berhasil Diperbaharui');
 $string .= "\n\t    );
 
             \$this->".$m."->insert(\$data);
-            \$this->session->set_flashdata('message', 'Create Record Success 2');
+            \$this->session->set_flashdata('message', 'Create Record Success');
             redirect(site_url('$c_url'));
         }
     }
@@ -129,7 +123,7 @@ foreach ($all as $row) {
     $string .= "\n\t\t'" . $row['column_name'] . "' => set_value('" . $row['column_name'] . "', \$row->". $row['column_name']."),";
 }
 $string .= "\n\t    );
-            \$this->template->load('template','$c_url/$v_form', \$data);
+            \$this->template->load('template','$v_form', \$data);
         } else {
             \$this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('$c_url'));
@@ -236,7 +230,7 @@ if ($export_word == '1') {
             'start' => 0
         );
         
-        \$this->load->view('" . $c_url ."/". $v_doc . "',\$data);
+        \$this->load->view('" . $v_doc . "',\$data);
     }";
 }
 
@@ -249,7 +243,7 @@ if ($export_pdf == '1') {
         );
         
         ini_set('memory_limit', '32M');
-        \$html = \$this->load->view('" . $c_url ."/". $v_pdf . "', \$data, true);
+        \$html = \$this->load->view('" . $v_pdf . "', \$data, true);
         \$this->load->library('pdf');
         \$pdf = \$this->pdf->load();
         \$pdf->WriteHTML(\$html);

@@ -16,29 +16,26 @@ class Harviacode
 
     function connection()
     {
-        $subject = file_get_contents('../application/config/database.php');
-        $string = str_replace("defined('BASEPATH') OR exit('No direct script access allowed');", "", $subject);
-        
-        $con = 'core/connection.php';
-        $create = fopen($con, "w") or die("Change your permision folder for application and harviacode folder to 777");
-        fwrite($create, $string);
-        fclose($create);
-        
-        require $con;
+        $db = file_get_contents('../application/config/database.php');
+        $db = explode("\$db['default'] = array(", $db);
+        $db = explode(");", $db[1]);
+        $db = explode(',', $db[0]);
 
-        $this->host = $db['default']['hostname'];
-        $this->user = $db['default']['username'];
-        $this->password = $db['default']['password'];
-        $this->database = $db['default']['database'];
+        for ($i = 0; $i < count($db); $i++) {
+            $host = explode(' => ', $db[$i]);
+            $data[] = trim($host[1], "'");
+        }
+
+        $this->host = $data[1];
+        $this->user = $data[2];
+        $this->password = $data[3];
+        $this->database = $data[4];
 
         $this->sql = new mysqli($this->host, $this->user, $this->password, $this->database);
-        if ($this->sql->connect_error)
-        {
+        if ($this->sql->connect_error) {
             echo $this->sql->connect_error . ", please check 'application/config/database.php'.";
             die();
         }
-        
-        unlink($con);
     }
 
     function table_list()
